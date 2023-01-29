@@ -8,8 +8,8 @@ import { Board } from './board.entity';
 
 @Module({
   imports: [
-    // TypeOrmModule.forFeature([Board]),
     TypeOrmExModule.forCustomRepository([BoardRepository]),
+    // TypeOrmModule.forFeature([Board]),
   ],
 
   controllers: [BoardsController],
