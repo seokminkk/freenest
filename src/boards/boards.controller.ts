@@ -8,6 +8,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   ParseIntPipe,
   Patch,
@@ -22,6 +23,7 @@ import { User } from 'src/auth/user.entity';
 @Controller('boards')
 @UseGuards(AuthGuard())
 export class BoardsController {
+  private logger = new Logger('boardcontroller 로거');
   constructor(private boardsService: BoardsService) {}
 
   @Get()
@@ -31,12 +33,18 @@ export class BoardsController {
 
   @Get('/maden')
   getBoardMadenId(@GetUser() user: User) {
+    this.logger.verbose(`${user.username} 이가 자기가 만든 게시물봅니다.`);
     return this.boardsService.getBoardMadenId(user);
   }
 
   @Post()
   @UsePipes(ValidationPipe)
   createBoard(@Body() createBoardDto: CreateBoardDto, @GetUser() user: User) {
+    this.logger.verbose(
+      `${user.username} 이가 게시물만들엇습니다 ${JSON.stringify(
+        createBoardDto,
+      )}`,
+    );
     return this.boardsService.createBoard(createBoardDto, user);
   }
 
