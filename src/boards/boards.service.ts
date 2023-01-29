@@ -5,6 +5,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { v1 as uuid } from 'uuid';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from './board.entity';
+import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class BoardsService {
@@ -16,8 +17,7 @@ export class BoardsService {
   async getAllBoards() {
     return await this.boardRepository.find();
   }
-
-  createBoard(createBoardDto: CreateBoardDto) {
+  createBoard(createBoardDto: CreateBoardDto, user: User) {
     // const { title, description } = createBoardDto;
     // const board = this.boardRepository.create({
     //   title,
@@ -28,7 +28,17 @@ export class BoardsService {
     // return board
     //위에주석부분은 리포지토리에서 처리해야함 확인차 여기서해본거
 
-    return this.boardRepository.createBoard(createBoardDto);
+    return this.boardRepository.createBoard(createBoardDto, user);
+  }
+
+  async getBoardMadenId(user: User) {
+    const query = this.boardRepository.createQueryBuilder('board');
+
+    query.where('board.userId = :userId', { userId: user.id });
+
+    const boards = await query.getMany();
+
+    return boards;
   }
 
   async getBoardById(id: number) {
@@ -40,8 +50,19 @@ export class BoardsService {
     return found;
   }
 
-  async deleteBoard(id: number) {
-    const result = await this.boardRepository.delete(id);
+  async deleteBoard(id: number, user: User) {
+    const result = await this.boardRepository
+      .createQueryBuilder('board')
+
+      .delete()
+
+      .from(Board)
+
+      .where('userId = :userId', { userId: user.id })
+
+      .andWhere('id = :id', { id: id })
+
+      .execute();
 
     if (result.affected === 0) {
       throw new NotFoundException(`${id} 는 없는아이디인디영`);

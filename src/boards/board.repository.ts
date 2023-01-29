@@ -5,6 +5,7 @@ import { CustomRepository } from 'src/typeorm-ex/typeorm-ex.decorator';
 import { EntityRepository, Repository } from 'typeorm';
 import { Board } from './board.entity';
 import { BoardStatus } from './board.model';
+import { User } from 'src/auth/user.entity';
 
 // @CustomRepository(Board)
 // @Injectable()
@@ -16,13 +17,14 @@ import { BoardStatus } from './board.model';
 // }
 @CustomRepository(Board)
 export class BoardRepository extends Repository<Board> {
-  async createBoard(createBoardDto: CreateBoardDto) {
+  async createBoard(createBoardDto: CreateBoardDto, user: User) {
     const { title, description } = createBoardDto;
 
     const board = this.create({
       title,
       description,
       status: BoardStatus.PUBLIC,
+      user,
     });
 
     await this.save(board);

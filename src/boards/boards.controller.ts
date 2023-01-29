@@ -16,6 +16,8 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { GetUser } from 'src/auth/get-user.decorator';
+import { User } from 'src/auth/user.entity';
 
 @Controller('boards')
 @UseGuards(AuthGuard())
@@ -27,10 +29,15 @@ export class BoardsController {
     return this.boardsService.getAllBoards();
   }
 
+  @Get('/maden')
+  getBoardMadenId(@GetUser() user: User) {
+    return this.boardsService.getBoardMadenId(user);
+  }
+
   @Post()
   @UsePipes(ValidationPipe)
-  createBoard(@Body() createBoardDto: CreateBoardDto) {
-    return this.boardsService.createBoard(createBoardDto);
+  createBoard(@Body() createBoardDto: CreateBoardDto, @GetUser() user: User) {
+    return this.boardsService.createBoard(createBoardDto, user);
   }
 
   @Get('/:id')
@@ -39,8 +46,8 @@ export class BoardsController {
   }
 
   @Delete('/:id')
-  deleteBoard(@Param('id', ParseIntPipe) id: number) {
-    return this.boardsService.deleteBoard(id);
+  deleteBoard(@Param('id', ParseIntPipe) id: number, @GetUser() user: User) {
+    return this.boardsService.deleteBoard(id, user);
   }
 
   @Patch('/:id/status')
