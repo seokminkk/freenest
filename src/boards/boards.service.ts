@@ -13,6 +13,10 @@ export class BoardsService {
     private boardRepository: BoardRepository,
   ) {}
 
+  async getAllBoards() {
+    return await this.boardRepository.find();
+  }
+
   createBoard(createBoardDto: CreateBoardDto) {
     // const { title, description } = createBoardDto;
     // const board = this.boardRepository.create({
@@ -38,7 +42,18 @@ export class BoardsService {
 
   async deleteBoard(id: number) {
     const result = await this.boardRepository.delete(id);
-    console.log('result', result);
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`${id} 는 없는아이디인디영`);
+    }
+  }
+
+  async updateBoardStatus(id: number, status: BoardStatus) {
+    const board = await this.getBoardById(id);
+
+    board.status = status;
+    await this.boardRepository.save(board);
+    return board;
   }
 
   //db하기전 nest로컬메모리로 테스트한거
