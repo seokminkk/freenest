@@ -4,11 +4,11 @@ import { Board } from 'src/boards/board.entity';
 
 export const typeORMConfig: TypeOrmModuleOptions = {
   type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'postgres',
-  password: '654321',
-  database: 'board-app',
+  host: process.env.DBHOST,
+  port: +process.env.DBPORT,
+  username: process.env.DBUSERNAME,
+  password: process.env.DBPASSWORD,
+  database: process.env.DBNAME,
   entities: [__dirname + '/../**/*.entity.{js,ts}'],
   // autoLoadEntities: true,
   synchronize: true,
